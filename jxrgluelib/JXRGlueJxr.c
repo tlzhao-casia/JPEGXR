@@ -1,15 +1,14 @@
-
 //*@@@+++@@@@******************************************************************
 //
-// Copyright � Microsoft Corp.
+// Copyright © Microsoft Corp.
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // 
-// � Redistributions of source code must retain the above copyright notice,
+// • Redistributions of source code must retain the above copyright notice,
 //   this list of conditions and the following disclaimer.
-// � Redistributions in binary form must reproduce the above copyright notice,
+// • Redistributions in binary form must reproduce the above copyright notice,
 //   this list of conditions and the following disclaimer in the documentation
 //   and/or other materials provided with the distribution.
 // 
@@ -766,16 +765,16 @@ ERR PKImageEncode_Terminate_WMP(
 
 
 ERR PKImageEncode_EncodeContent_Init(
-    PKImageEncode* pIE, 
-    PKPixelInfo PI,
-    U32 cLine,
-    U8* pbPixels,
-    U32 cbStride)
+    PKImageEncode* pIE,  // 指向jxr文件的流
+    PKPixelInfo PI, // 源图像数据的像素格式
+    U32 cLine, // 图片行数？？？？
+    U8* pbPixels, // 源图像数据
+    U32 cbStride) // 图像数据行步长
 {
     ERR err = WMP_errSuccess;
 
     // init codec
-    pIE->WMP.wmiI.cWidth = pIE->uWidth;
+    pIE->WMP.wmiI.cWidth = pIE->uWidth; // 图片信息初始化
     pIE->WMP.wmiI.cHeight = pIE->uHeight;
     pIE->WMP.wmiI.bdBitDepth = PI.bdBitDepth;
     pIE->WMP.wmiI.cBitsPerUnit = PI.cbitUnit;
@@ -792,7 +791,7 @@ ERR PKImageEncode_EncodeContent_Init(
         pIE->WMP.wmiI.fPaddedUserBuffer = TRUE;
         // Note that there are additional conditions in strenc_x86.c's strEncOpt
         // which could prevent optimization from being engaged
-    }
+    } // 这一步判断不知道作用是什么
 
     //if (pIE->WMP.bHasAlpha)
     //{
@@ -2277,4 +2276,3 @@ ERR PKImageDecode_Create_WMP(PKImageDecode** ppID)
 Cleanup:
     return err;
 }
-
