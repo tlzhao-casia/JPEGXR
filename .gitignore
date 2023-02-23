@@ -3,6 +3,5 @@ bin
 figure/*
 *.pyc
 __pycache__
-*.mmd
 
 cmake-*

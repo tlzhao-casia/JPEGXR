@@ -1,0 +1,136 @@
+classDiagram
+    PKImageEncode_WritePixels_WMP --|> WriteContainerPre
+    PKImageEncode_WritePixels_WMP --|> PKImageEncode_EncodeContent
+    PKImageEncode_WritePixels_WMP --|> WriteContainerPost
+    PKImageEncode_EncodeContent --|> PKImageEncode_EncodeContent_Init
+    PKImageEncode_EncodeContent --|> PKImageEncode_EncodeContent_Encode
+    PKImageEncode_EncodeContent --|> PKImageEncode_EncodeContent_Term
+    PKImageEncode_EncodeContent_Init --|> ImageStrEncInit
+    ImageStrEncInit --|> InitializeStrEnc
+    ImageStrEncInit --|> StrEncInit
+    PKImageEncode_EncodeContent_Encode --|> ImageStrEncode
+    ImageStrEncode --|> initMBPtr
+    ImageStrEncode --|> inputMBRow
+    ImageStrEncode --|> processMacroBlock
+    ImageStrEncode --|> advanceMBPtr
+    ImageStrEncode --|> advanceOneMBRow
+    ImageStrEncode --|> swapMRPtr
+
+    class PKImageEncode_WritePixels_WMP {
+        jxrgluelib/JXRGlueJxr.c
+    }
+    class WriteContainerPre {
+        jxrgluelib/JXRGlueJxr.c
+        写报文头
+    }
+    class WriteContainerPost {
+        jxrgluelib/JXRGlueJxr.c
+        写报尾
+    }
+    class inputMBRow {
+        image/encode/strenc.c
+
+        这里会加载16行图像数据到
+        p1MBbuffer
+        中，数据会被分成多个16x16
+        的块，以z字形内存排布方式
+        排布。
+    }
+    class processMacroBlock {
+        image/encode/strenc.c
+
+        处理一个宏块，功能分为左上，
+        上，右上，左，中，右，
+        左下，下，右下。
+
+        循环不变式：每一次迭代开始
+        时，
+        p1MBbuffer
+        p0MBbuffer
+        分别指向当前处理的宏块数据
+        和当前宏块的上一行数据。
+    }
+    class advanceMBPtr {
+        image/sys/strcodec.c
+
+        每处理一个宏块被调用一次,
+        将
+        pPlane
+        指向
+        p0MBbuffer
+        同时将
+        p0MBbuffer
+        p1MBbuffer
+        指向下一个宏块
+    }
+    class advanceOneMBRow {
+        image/sys/strcodec.c    
+
+        每处理完一个非顶部的16行
+        数据就调用一次。  
+        交换
+        predInfo
+        predInfoPrevRow
+        暂时不知道作用是
+        什么  
+    }
+    class swapMRPtr {
+        image/sys/strcodec.c
+
+        每处理完一个16行的数据
+        就调用一次。交换
+        a0MBbuffer
+        a1MBbuffer
+        的指针指向。
+    }
+    class PKImageEncode_EncodeContent {
+        jxrgluelib/JXRGlueJxr.c
+        图片文件内容编码
+    }
+    class PKImageEncode_EncodeContent_Init {
+        jxrgluelib/JXRGlueJxr.c
+        这一步会进行主要的内存申请，申请两块内存，
+        每一块内存的大小是16行图像数据的大小，并
+        分别用
+        a0MBbuffer
+        a1MBbuffer
+        指向。每一个通道都会进行内存申请。
+    }
+    class PKImageEncode_EncodeContent_Encode {
+        jxrgluelib/JXRGlueJxr.c
+    }
+    class ImageStrEncode {
+        image/sys/strenc.c
+
+        每16行数据调用一次该函数
+        循环不变式：每一次迭代开始时，
+        a0MBbuffer
+        均指向当前处理位置的上一行数据。
+    }
+    class initMBPtr {
+        image/sys/strcodec.c
+
+        这一步会进行指针初始化，将
+        aMBbuffer
+        的地址复制到
+        pMBbuffer
+        中。
+    }
+    class PKImageEncode_EncodeContent_Term {
+        jxrgluelib/JXRGlueJxr.c
+    }
+    class ImageStrEncInit {
+        image/encode/strenc.c
+    }
+    class InitializeStrEnc {
+        image/encode/strenc.c
+    }
+    class StrEncInit {
+        image/encode/strenc.c
+    }
+    initMBPtr --o inputMBRow
+    inputMBRow --o processMacroBlock
+    processMacroBlock --o advanceMBPtr
+    advanceMBPtr --o advanceOneMBRow
+    advanceOneMBRow --o swapMRPtr
+    advanceMBPtr --o processMacroBlock
